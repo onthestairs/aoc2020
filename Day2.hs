@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Day1 (solution) where
+module Day2 (solution) where
 
 import AOC (Parser, Solution (..), parseFile, parseInt)
 import Relude
