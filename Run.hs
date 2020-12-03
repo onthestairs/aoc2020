@@ -8,12 +8,14 @@ import Control.Lens
 import qualified Data.Map.Strict as Map
 import Day1
 import Day2
+import Day3
 import Relude
 
 solutions =
   Map.fromList
     [ (1, SimpleSolution Day1.solution),
-      (2, SimpleSolution Day2.solution)
+      (2, SimpleSolution Day2.solution),
+      (3, SimpleSolution Day3.solution)
     ]
 
 data Part = Part1 | Part2 | Both

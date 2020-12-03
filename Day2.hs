@@ -9,7 +9,6 @@ import Control.Lens
 import Relude
 import Text.Megaparsec (eof, sepBy1)
 import Text.Megaparsec.Char (char, lowerChar, newline, space)
-import Text.Parsec.Combinator (many1)
 
 data PasswordPolicy = PasswordPolicy
   { _policyChar :: Char,
