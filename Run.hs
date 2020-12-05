@@ -10,6 +10,7 @@ import Day1
 import Day2
 import Day3
 import Day4
+import Day5
 import Relude
 
 solutions =
@@ -17,7 +18,8 @@ solutions =
     [ (1, SimpleSolution Day1.solution),
       (2, SimpleSolution Day2.solution),
       (3, SimpleSolution Day3.solution),
-      (4, SimpleSolution Day4.solution)
+      (4, SimpleSolution Day4.solution),
+      (5, SimpleSolution Day5.solution)
     ]
 
 data Part = Part1 | Part2 | Both
