@@ -5,11 +5,10 @@
 module Day5 (solution) where
 
 import AOC (Parser, Solution (..), parseFile)
-import qualified Data.Map.Strict as Map
 import Relude
 import Relude.Extra (Foldable1 (maximum1))
-import Text.Megaparsec (anySingle, choice, eof, lookAhead, sepBy1, try)
-import Text.Megaparsec.Char (alphaNumChar, char, newline, string)
+import Text.Megaparsec (eof, sepBy1)
+import Text.Megaparsec.Char (char, newline)
 
 data RowLocation = F | B deriving (Show)
 
