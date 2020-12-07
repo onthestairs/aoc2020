@@ -10,7 +10,7 @@ import Control.Lens hiding (contains)
 import qualified Data.Map.Strict as Map
 import qualified Data.MultiSet as Set
 import Relude
-import Text.Megaparsec (anySingle, eof, lookAhead, sepBy1, try)
+import Text.Megaparsec (eof, sepBy1)
 import Text.Megaparsec.Char (alphaNumChar, char, newline, string)
 
 data BagRule = BagRule
@@ -39,7 +39,7 @@ parseNumberOfBags = do
   char ' '
   string "bag"
   when (n > 1) (char 's' $> ())
-  pure $ (n, colour)
+  pure (n, colour)
 
 parseBagRule = do
   colour <- parseColour
@@ -64,8 +64,8 @@ findHeldBags rules colour = do
       allHeldBags <- case Map.lookup colour rules of
         Just cs -> foldlM combineBags Set.empty cs
         Nothing -> pure Set.empty
-      modify (\cache' -> Map.insert colour allHeldBags cache')
-      pure $ allHeldBags
+      modify (Map.insert colour allHeldBags)
+      pure allHeldBags
   where
     combineBags heldBags (n, heldColour) = do
       subBags <- findHeldBags rules heldColour
@@ -77,7 +77,7 @@ findAllHeldBags rules = execState (forM colours (\colour -> findHeldBags rules c
   where
     colours = Map.keys rules
 
-solve1 rules = length $ filter (\s -> Set.member "shiny gold" s) $ Map.elems heldBags
+solve1 rules = length $ filter (Set.member "shiny gold") $ Map.elems heldBags
   where
     graph = makeGraph rules
     heldBags = findAllHeldBags graph
