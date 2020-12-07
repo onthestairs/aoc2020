@@ -5,12 +5,10 @@
 module Day6 (solution) where
 
 import AOC (Parser, Solution (..), parseFile)
-import Data.List (nub)
 import qualified Data.Set as Set
 import Relude
-import Relude.Extra (Foldable1 (maximum1))
 import Text.Megaparsec (anySingle, eof, lookAhead, sepBy1, try)
-import Text.Megaparsec.Char (alphaNumChar, char, newline)
+import Text.Megaparsec.Char (alphaNumChar, newline)
 
 type Input = [[[Char]]]
 
