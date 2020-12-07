@@ -8,7 +8,7 @@ module Day7 (solution) where
 import AOC (Parser, Solution (..), parseFile, parseInt)
 import Control.Lens hiding (contains)
 import qualified Data.Map.Strict as Map
-import qualified Data.Set as Set
+import qualified Data.MultiSet as Set
 import Relude
 import Text.Megaparsec (anySingle, eof, lookAhead, sepBy1, try)
 import Text.Megaparsec.Char (alphaNumChar, char, newline, string)
@@ -55,29 +55,35 @@ parseBagRule = do
 makeGraph :: Input -> Map.Map String [(Int, String)]
 makeGraph rules = Map.fromList $ map (\br -> (view colour br, view contains br)) rules
 
-findHeldBags :: Map.Map String [(Int, String)] -> String -> State (Map.Map String (Set.Set String)) (Set.Set String)
+findHeldBags :: Map.Map String [(Int, String)] -> String -> State (Map.Map String (Set.MultiSet String)) (Set.MultiSet String)
 findHeldBags rules colour = do
   cache <- get
   case Map.lookup colour cache of
     Just c -> pure c
     Nothing -> do
       allHeldBags <- case Map.lookup colour rules of
-        Just cs -> foldlM (\heldBags (_, heldColour) -> Set.union (Set.union heldBags (Set.singleton heldColour)) <$> findHeldBags rules heldColour) Set.empty cs
+        Just cs -> foldlM combineBags Set.empty cs
         Nothing -> pure Set.empty
       modify (\cache' -> Map.insert colour allHeldBags cache')
       pure $ allHeldBags
+  where
+    combineBags heldBags (n, heldColour) = do
+      subBags <- findHeldBags rules heldColour
+      let allSubBags = Set.unions $ replicate n subBags
+      pure $ Set.union heldBags $ Set.insertMany heldColour n allSubBags
 
-findAllHeldBags :: Map.Map String [(Int, String)] -> Map.Map String (Set.Set String)
+findAllHeldBags :: Map.Map String [(Int, String)] -> Map.Map String (Set.MultiSet String)
 findAllHeldBags rules = execState (forM colours (\colour -> findHeldBags rules colour)) Map.empty
   where
     colours = Map.keys rules
 
 solve1 rules = length $ filter (\s -> Set.member "shiny gold" s) $ Map.elems heldBags
   where
-    -- solve1 rules = heldBags
+    graph = makeGraph rules
+    heldBags = findAllHeldBags graph
 
-    -- solve1 rules = heldBags
-
+solve2 rules = Set.size <$> Map.lookup "shiny gold" heldBags
+  where
     graph = makeGraph rules
     heldBags = findAllHeldBags graph
 
@@ -85,5 +91,5 @@ solution =
   Solution
     { _parse = parseFile "7.txt" parseInput,
       _solve1 = solve1,
-      _solve2 = const ()
+      _solve2 = solve2
     }

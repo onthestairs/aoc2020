@@ -23,6 +23,7 @@ let
     megaparsec
     conduit
     lens
+    multiset
   ];
   my-ghc = pkgs.haskellPackages.ghcWithPackages haskellDeps;
 in
