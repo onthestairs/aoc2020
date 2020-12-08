@@ -2,12 +2,13 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt) where
+module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt, parseSignedInt) where
 
 import Control.Lens
 import Control.Lens.TH ()
 import Relude
 import Text.Megaparsec (Parsec, runParser)
+import Text.Megaparsec.Char (char)
 import qualified Text.Megaparsec.Char.Lexer as L
 
 data Solution a b c = Solution
@@ -33,3 +34,10 @@ parseFile path parse = do
 
 parseInt :: Parser Int
 parseInt = L.decimal
+
+parseSignedInt :: Parser Int
+parseSignedInt = do
+  sign <- char '+' <|> char '-'
+  n <- parseInt
+  let coefficient = if sign == '+' then 1 else -1
+  pure $ coefficient * n
