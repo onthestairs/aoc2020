@@ -7,11 +7,10 @@ module Day8 (solution) where
 
 import AOC (Parser, Solution (..), parseFile, parseSignedInt)
 import Control.Lens hiding (contains)
-import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import Relude hiding (Op)
 import Text.Megaparsec (eof, sepBy1)
-import Text.Megaparsec.Char (alphaNumChar, char, newline, string)
+import Text.Megaparsec.Char (newline, string)
 
 data Op = Nop Int | Acc Int | Jmp Int deriving (Show)
 
@@ -30,7 +29,8 @@ parseOp = do
 data BootCodeState = BootCodeState
   { _acc :: Int,
     _cursor :: Int,
-    _visitedOps :: Set.Set Int
+    _visitedOps :: Set.Set Int,
+    _infiniteLoopEntered :: Bool
   }
   deriving (Show)
 
@@ -50,24 +50,45 @@ runBootCode s ops = snd $ usingState s go
     go = do
       cursor' <- use cursor
       visitedOps' <- use visitedOps
-      unless (Set.member cursor' visitedOps') $ do
-        let op = fromMaybe (error "out of range") (ops !!? cursor')
-        modifying visitedOps (Set.insert cursor')
-        runOp op
-        go
+      if Set.member cursor' visitedOps'
+        then assign infiniteLoopEntered True
+        else do
+          case ops !!? cursor' of
+            Just op -> do
+              modifying visitedOps (Set.insert cursor')
+              runOp op
+              go
+            Nothing -> do
+              pure ()
 
-solve1 ops = view acc $ runBootCode initialState ops
+runToCompletion ops = runBootCode initialState ops
   where
     initialState =
       BootCodeState
         { _acc = 0,
           _cursor = 0,
-          _visitedOps = Set.empty
+          _visitedOps = Set.empty,
+          _infiniteLoopEntered = False
         }
+
+solve1 ops = view acc $ runToCompletion ops
+
+makeOpSwaps :: [Op] -> [[Op]]
+makeOpSwaps ops = go ops
+  where
+    go (Jmp n : rest) = (Nop n : rest) : [(Jmp n : others) | others <- go rest]
+    go (Nop n : rest) = (Jmp n : rest) : [(Nop n : others) | others <- go rest]
+    go (op : rest) = [op : others | others <- go rest]
+    go [] = [[]]
+
+-- solve2 :: [Op] -> Maybe Int
+solve2 ops = view acc <$> find (not . view infiniteLoopEntered) (map runToCompletion swaps)
+  where
+    swaps = makeOpSwaps ops
 
 solution =
   Solution
     { _parse = parseFile "8.txt" parseInput,
       _solve1 = solve1,
-      _solve2 = const 2
+      _solve2 = solve2
     }
