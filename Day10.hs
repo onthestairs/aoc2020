@@ -34,8 +34,6 @@ solve1 xs = do
   let counts = (count . differences . sort) ys
   pure $ (Set.occur 1 counts) * (Set.occur 3 counts)
 
--- findLegalPaths ::
-
 findNumberOfLegalPaths :: Seq.Seq Int -> Int
 findNumberOfLegalPaths ys = fst $ usingState Map.empty (go 0)
   where
@@ -45,16 +43,16 @@ findNumberOfLegalPaths ys = fst $ usingState Map.empty (go 0)
       case Map.lookup i cache of
         Just n -> pure n
         Nothing -> do
-          let current = fromMaybe (error "bad cursor") $ Seq.lookup i ys
-          let nextIs = takeWhile (\j -> isValidNext current j) [i + 1 ..]
-          -- nextPaths <- mapM go nextIs
-          -- let n = sum nextPaths
-          -- modify (\m -> Map.insert i n m)
-          ns <- forM nextIs $ \i -> do
-            n <- go i
-            modify (\m -> Map.insert i n m)
-            pure n
-          pure $ sum ns
+          if i == length ys - 1 -- final number has been reached
+            then pure 1
+            else do
+              let current = fromMaybe (error "bad cursor") $ Seq.lookup i ys
+              let nextIs = takeWhile (isValidNext current) [i + 1 ..]
+              ns <- forM nextIs $ \i -> do
+                n <- go i
+                modify $ Map.insert i n
+                pure n
+              pure $ sum ns
     isValidNext current j = case Seq.lookup j ys of
       Just j -> j - current <= 3
       Nothing -> False
