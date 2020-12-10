@@ -7,6 +7,7 @@ import AOC
 import Control.Lens
 import qualified Data.Map.Strict as Map
 import Day1
+import Day10
 import Day2
 import Day3
 import Day4
@@ -27,7 +28,8 @@ solutions =
       (6, SimpleSolution Day6.solution),
       (7, SimpleSolution Day7.solution),
       (8, SimpleSolution Day8.solution),
-      (9, SimpleSolution Day9.solution)
+      (9, SimpleSolution Day9.solution),
+      (10, SimpleSolution Day10.solution)
     ]
 
 data Part = Part1 | Part2 | Both
