@@ -10,7 +10,7 @@ import qualified Data.Map.Strict as Map
 import qualified Data.MultiSet as Set
 import qualified Data.Sequence as Seq
 import Relude hiding (Op)
-import Relude.Extra (Foldable1 (minimum1), maximum1)
+import Relude.Extra (maximum1)
 import Text.Megaparsec (eof, sepBy1)
 import Text.Megaparsec.Char (newline)
 
@@ -21,14 +21,12 @@ parseInput = sepBy1 parseInt newline <* eof
 
 differences xs = zipWith (-) (drop 1 xs) xs
 
--- addToEnd :: [a] -> Maybe [a]
 addToEnds xs = do
   x <- viaNonEmpty maximum1 xs
   pure $ 0 : (x + 3) : xs
 
 count = Set.fromList
 
--- solve1 :: Num c => [a] -> Maybe [c]
 solve1 xs = do
   ys <- addToEnds xs
   let counts = (count . differences . sort) ys
