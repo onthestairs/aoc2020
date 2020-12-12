@@ -24,6 +24,7 @@ let
     conduit
     lens
     multiset
+    linear
   ];
   my-ghc = pkgs.haskellPackages.ghcWithPackages haskellDeps;
 in
