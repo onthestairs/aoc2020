@@ -1,12 +1,14 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Day13 (solution) where
 
 import AOC (Parser, Solution (..), parseFile, parseInteger)
+import Math.NumberTheory.Moduli (modulo)
+import Math.NumberTheory.Moduli.Chinese (chineseSomeMod)
+import Math.NumberTheory.Moduli.Class (SomeMod (InfMod, SomeMod), getVal)
 import Relude hiding (Op)
 import Text.Megaparsec (eof, sepBy1)
 import Text.Megaparsec.Char (char, newline)
@@ -34,31 +36,15 @@ solve1 (timestamp, busses) = do
   (bus, depatureTime) <- viaNonEmpty head $ sortOn snd bsWithDepartureTime
   pure $ bus * (depatureTime - timestamp)
 
--- taken from https://stackoverflow.com/a/35529381
-crt :: (Integral a, Foldable t) => t (a, a) -> (a, a)
-crt = foldr go (0, 1)
-  where
-    go (r1, m1) (r2, m2) = (r `mod` m, m)
-      where
-        r = r2 + m2 * (r1 - r2) * (m2 `inv` m1)
-        m = m2 * m1
-
-    -- Modular Inverse
-    a `inv` m = let (_, i, _) = gcd a m in i `mod` m
-
-    -- Extended Euclidean Algorithm
-    gcd 0 b = (b, 0, 1)
-    gcd a b = (g, t - (b `div` a) * s, s)
-      where
-        (g, s, t) = gcd (b `mod` a) a
-
----
-solve2 (_, busses) = b - a
-  where
-    bsWithOffset = mapMaybe p $ zip [0 ..] busses
-    p (o, Just n) = Just (o, n)
-    p (_, Nothing) = Nothing
-    (a, b) = crt bsWithOffset
+solve2 (_, busses) = do
+  let p b = case b of
+        (o, Just n) -> Just ((n - o) `modulo` fromIntegral n)
+        (_, Nothing) -> Nothing
+  let bsWithOffset = mapMaybe p $ zip [0 ..] busses
+  solvedMod <- foldlM chineseSomeMod (0 `modulo` 1) bsWithOffset
+  case solvedMod of
+    SomeMod k -> Just (getVal k)
+    InfMod {} -> Nothing
 
 solution =
   Solution

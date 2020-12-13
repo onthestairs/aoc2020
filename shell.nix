@@ -25,6 +25,7 @@ let
     lens
     multiset
     linear
+    arithmoi
   ];
   my-ghc = pkgs.haskellPackages.ghcWithPackages haskellDeps;
 in
