@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt, parseSignedInt) where
+module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt, parseInteger, parseSignedInt) where
 
 import Control.Lens
 import Control.Lens.TH ()
@@ -35,7 +35,10 @@ parseFile path parse = do
 parseInt :: Parser Int
 parseInt = L.decimal
 
-parseSignedInt :: Parser Int
+parseInteger :: Parser Integer
+parseInteger = L.decimal
+
+-- parseSignedInt :: Parser Int
 parseSignedInt = do
   sign <- char '+' <|> char '-'
   n <- parseInt
