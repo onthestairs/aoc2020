@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt, parseInteger, parseSignedInt) where
+module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt, parseInt64, parseInteger, parseSignedInt) where
 
 import Control.Lens
 import Control.Lens.TH ()
@@ -34,6 +34,9 @@ parseFile path parse = do
 
 parseInt :: Parser Int
 parseInt = L.decimal
+
+parseInt64 :: Parser Int64
+parseInt64 = L.decimal
 
 parseInteger :: Parser Integer
 parseInteger = L.decimal

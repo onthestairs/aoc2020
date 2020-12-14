@@ -11,6 +11,7 @@ import Day10
 import Day11
 import Day12
 import Day13
+import Day14
 import Day2
 import Day3
 import Day4
@@ -35,7 +36,8 @@ solutions =
       (10, SimpleSolution Day10.solution),
       (11, SimpleSolution Day11.solution),
       (12, SimpleSolution Day12.solution),
-      (13, SimpleSolution Day13.solution)
+      (13, SimpleSolution Day13.solution),
+      (14, SimpleSolution Day14.solution)
     ]
 
 data Part = Part1 | Part2 | Both
