@@ -23,7 +23,8 @@ parseInput = sepBy1 parseInt (char ',') <* eof
 
 data GameState = GameState
   { _indices :: IntMap.IntMap (NonEmpty Int),
-    _history :: (NonEmpty Int),
+    -- _history :: (NonEmpty Int),
+    _lastN :: Int,
     _turnNumber :: Int
     -- _n :: Int
     -- _currentIndex :: Int
@@ -33,18 +34,20 @@ makeLenses ''GameState
 
 turn :: State GameState ()
 turn = do
-  turnHistory <- use history
-  let lastN = head turnHistory
+  -- turnHistory <- use history
+  -- let lastN = head turnHistory
+  lastN' <- use lastN
   indicesHistory <- use indices
   turnNumber' <- use turnNumber
-  let turnNumber = length turnHistory + 1
-  let nextN = case IntMap.lookup lastN indicesHistory of
+  -- let turnNumber = length turnHistory + 1
+  let nextN = case IntMap.lookup lastN' indicesHistory of
         Just (i :| (i' : _)) -> i - i'
         Just (i :| []) -> 0
         Nothing -> 0
-  modifying history (nextN <|)
+  -- modifying history ()
   modifying indices (IntMap.insertWith (<>) nextN (turnNumber' :| []))
   modifying turnNumber (+ 1)
+  modifying lastN (const nextN)
 
 turnUntil p = do
   turn
@@ -53,14 +56,16 @@ turnUntil p = do
     then pure ()
     else turnUntil p
 
-findNth is n = head $ view history $ snd $ usingState initialState (turnUntil ((== n) . length . view history))
-  where
-    initialState =
-      GameState
-        { _indices = IntMap.fromList $ zip is (map (:| []) [1 ..]),
-          _history = fromList (reverse is)
-          -- _n =
-        }
+findNth is n = do
+  lastN' <- viaNonEmpty last is
+  let initialState =
+        GameState
+          { _indices = IntMap.fromList $ zip is (map (:| []) [1 ..]),
+            -- _history = fromList (reverse is)
+            _lastN = lastN',
+            _turnNumber = length is + 1
+          }
+  pure $ view lastN $ snd $ usingState initialState (turnUntil ((== n + 1) . view turnNumber))
 
 solve1 is = findNth is 2020
 
