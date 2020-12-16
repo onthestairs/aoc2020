@@ -26,6 +26,7 @@ let
     multiset
     linear
     arithmoi
+    monad-loops
   ];
   my-ghc = pkgs.haskellPackages.ghcWithPackages haskellDeps;
 in
