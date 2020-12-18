@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module AOC (Solution (..), parse, solve1, solve2, GenericSolution (..), Parser, parseFile, parseInt, parseInt64, parseInteger, parseSignedInt) where
+module AOC (Solution (..), SeparateParseSolution (..), parse, solve1, solve2, parse1, parse2, solveWith1, solveWith2, GenericSolution (..), Parser, parseFile, parseInt, parseInt64, parseInteger, parseSignedInt) where
 
 import Control.Lens
 import Control.Lens.TH ()
@@ -19,8 +19,18 @@ data Solution a b c = Solution
 
 makeLenses ''Solution
 
+data SeparateParseSolution a b c d = SeparateParseSolution
+  { _parse1 :: IO (Maybe a),
+    _solveWith1 :: a -> b,
+    _parse2 :: IO (Maybe c),
+    _solveWith2 :: c -> d
+  }
+
+makeLenses ''SeparateParseSolution
+
 data GenericSolution where
   SimpleSolution :: (Show a, Show b, Show c) => Solution a b c -> GenericSolution
+  TwoParseSolution :: (Show a, Show b, Show c, Show d) => SeparateParseSolution a b c d -> GenericSolution
 
 type Path = String
 

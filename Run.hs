@@ -15,6 +15,7 @@ import Day14
 import Day15
 import Day16
 import Day17
+import Day18
 import Day2
 import Day3
 import Day4
@@ -43,10 +44,11 @@ solutions =
       (14, SimpleSolution Day14.solution),
       -- (15, SimpleSolution Day15.solution),
       (16, SimpleSolution Day16.solution),
-      (17, SimpleSolution Day17.solution)
+      (17, SimpleSolution Day17.solution),
+      (18, TwoParseSolution Day18.solution)
     ]
 
-data Part = Part1 | Part2 | Both
+data Part = Part1 | Part2 | Both deriving (Eq)
 
 peekInput :: Int -> IO ()
 peekInput day = do
@@ -56,6 +58,13 @@ peekInput day = do
     Just (SimpleSolution solution) -> do
       parsed <- view parse solution
       print parsed
+    Just (TwoParseSolution solution) -> do
+      parsed1 <- view parse1 solution
+      putStrLn "Part 1"
+      -- print parsed1
+      parsed2 <- view parse2 solution
+      putStrLn "Part 2"
+      print parsed2
 
 showSolution (SimpleSolution solution) part = do
   maybeParsed <- view parse solution
@@ -70,6 +79,19 @@ showSolution (SimpleSolution solution) part = do
         Both -> do
           print part1Result
           print part2Result
+showSolution (TwoParseSolution solution) part = do
+  when (part == Part1 || part == Both) $ do
+    maybeParsed1 <- view parse1 solution
+    case maybeParsed1 of
+      Nothing -> putStrLn "Couldn't parse part i"
+      Just parsed1 -> do
+        print $ (view solveWith1 solution) parsed1
+  when (part == Part2 || part == Both) $ do
+    maybeParsed2 <- view parse2 solution
+    case maybeParsed2 of
+      Nothing -> putStrLn "Couldn't parse part ii"
+      Just parsed2 -> do
+        print $ (view solveWith2 solution) parsed2
 
 solve :: Int -> Part -> IO ()
 solve day part = do
